@@ -487,42 +487,53 @@ function updateCartUI() {
 function sendToWhatsApp() {
     if (cart.length === 0) return;
 
-    let message = "🛒 *PEDIDO*\n\n";
-    message += "Hola! Me gustaría hacer el siguiente pedido:\n\n";
+    let message = "🍽️ *EL SAZON*\n";
+    message += "━━━━━━━━━━━━━━━━━━━━\n\n";
+    message += "👋 *¡Hola!*\n\n";
+    message += "Me gustaría realizar el siguiente pedido:\n\n";
+    message += "━━━━━━━━━━━━━━━━━━━━\n\n";
 
     cart.forEach((item, index) => {
-        message += `${index + 1}. *${item.name}*\n`;
-        message += `   Cantidad: ${item.quantity}\n`;
+        message += `📦 *${index + 1}. ${item.name}*\n`;
+        message += `   ✨ Cantidad: ${item.quantity}\n`;
         
         if (item.selectedOptions) {
-            if (Array.isArray(item.selectedOptions)) {
-                message += `   Opciones: ${item.selectedOptions.join(', ')}\n`;
-            } else {
-                message += `   Opción: ${item.selectedOptions}\n`;
+            if (Array.isArray(item.selectedOptions) && item.selectedOptions.length > 0) {
+                message += `   🎯 Guisos seleccionados:\n`;
+                item.selectedOptions.forEach(option => {
+                    message += `      • ${option}\n`;
+                });
+            } else if (!Array.isArray(item.selectedOptions)) {
+                message += `   🎯 Guiso: ${item.selectedOptions}\n`;
             }
         }
         
         if (item.selectedExtras && item.selectedExtras.length > 0) {
-            message += `   Extras: ${item.selectedExtras.join(', ')}\n`;
+            message += `   ➕ Extras:\n`;
+            item.selectedExtras.forEach(extra => {
+                message += `      • ${extra}\n`;
+            });
         }
         
         if (item.price > 0) {
-            message += `   Precio unitario: $${item.price.toFixed(2)}\n`;
-            message += `   Subtotal: $${(item.price * item.quantity).toFixed(2)}\n\n`;
+            message += `   💵 Precio unitario: $${item.price.toFixed(2)}\n`;
+            message += `   💰 Subtotal: $${(item.price * item.quantity).toFixed(2)}\n`;
         } else {
-            message += `   Precio: Consultar\n\n`;
+            message += `   💵 Precio: Consultar\n`;
         }
+        message += `\n`;
     });
 
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
     if (total > 0) {
-        message += `━━━━━━━━━━━━━━━━\n`;
-        message += `💰 *TOTAL: $${total.toFixed(2)}*\n\n`;
+        message += `💰 *TOTAL A PAGAR: $${total.toFixed(2)}*\n\n`;
     } else {
-        message += `━━━━━━━━━━━━━━━━\n`;
         message += `💰 *Total: Consultar precio*\n\n`;
     }
-    message += `Gracias! 😊`;
+    message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+    message += `✨ *De La Abuela y Su Nieta* ✨\n\n`;
+    message += `🙏 ¡Gracias por tu preferencia! 😊`;
 
     // Codificar el mensaje para URL
     const encodedMessage = encodeURIComponent(message);

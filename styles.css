@@ -64,8 +64,71 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    gap: 2rem;
+}
+
+.nav-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--chocolate);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.nav-subtitle {
+    font-size: 0.75rem;
+    color: var(--terracota);
+    margin: 0;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: var(--negro);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: var(--transition);
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--terracota);
+    background: rgba(200, 90, 47, 0.1);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--terracota);
+    transition: var(--transition);
+}
+
+.nav-link:hover::after {
+    width: 80%;
 }
 
 .cart-icon-btn {
@@ -917,6 +980,27 @@ body {
         padding: 0.75rem 1rem;
     }
 
+    .top-bar-content {
+        gap: 1rem;
+    }
+
+    .nav-brand {
+        flex: 1;
+    }
+
+    .nav-title {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+
+    .nav-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .nav-menu {
+        display: none;
+    }
+
     .hero-header {
         min-height: 400px;
         margin-top: 60px;
@@ -1041,6 +1125,19 @@ body {
 @media (max-width: 480px) {
     .top-bar {
         padding: 0.5rem 0.75rem;
+    }
+
+    .nav-title {
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .nav-subtitle {
+        font-size: 0.65rem;
+    }
+
+    .cart-icon-btn {
+        padding: 0.6rem 0.85rem;
     }
 
     .hero-header {

@@ -191,6 +191,19 @@ function setupEventListeners() {
             document.getElementById('menuSection').scrollIntoView({ behavior: 'smooth' });
         });
     }
+
+    // Agregar scroll suave a los enlaces del nav
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
 }
 
 // Abrir modal de opciones

@@ -245,16 +245,37 @@ function openOptionsModal(productId) {
             modalContent += `</select>`;
         } else if (product.options.type === 'checkbox') {
             const maxSelections = product.options.maxSelections || product.options.choices.length;
-            modalContent += `<p class="max-selections-info">Puedes seleccionar hasta ${maxSelections} opciones</p>`;
-            product.options.choices.forEach((choice, index) => {
-                const choiceName = typeof choice === 'string' ? choice : choice.name;
-                modalContent += `
-                    <label class="option-checkbox-label">
-                        <input type="checkbox" class="option-checkbox" value="${choiceName}" name="options" data-max="${maxSelections}">
-                        <span>${choiceName}</span>
-                    </label>
-                `;
-            });
+            // Para Orden de Harina y Orden de Maíz, usar selector de cantidad
+            const isTacoOrder = productId === 5 || productId === 6;
+            
+            if (isTacoOrder) {
+                modalContent += `<p class="max-selections-info">Selecciona hasta ${maxSelections} tacos en total (puedes combinar diferentes guisos)</p>`;
+                product.options.choices.forEach((choice, index) => {
+                    const choiceName = typeof choice === 'string' ? choice : choice.name;
+                    modalContent += `
+                        <div class="quantity-selector-group">
+                            <label class="quantity-selector-label">${choiceName}</label>
+                            <div class="quantity-selector">
+                                <button type="button" class="qty-btn qty-minus" data-choice="${choiceName}" onclick="adjustTacoQuantity('${choiceName}', -1, ${maxSelections})">-</button>
+                                <input type="number" class="qty-input" id="qty-${choiceName}" value="0" min="0" max="${maxSelections}" data-choice="${choiceName}" readonly>
+                                <button type="button" class="qty-btn qty-plus" data-choice="${choiceName}" onclick="adjustTacoQuantity('${choiceName}', 1, ${maxSelections})">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                modalContent += `<div class="total-tacos-info" id="totalTacosInfo">Total seleccionado: <span id="totalTacosCount">0</span> / ${maxSelections}</div>`;
+            } else {
+                modalContent += `<p class="max-selections-info">Puedes seleccionar hasta ${maxSelections} opciones</p>`;
+                product.options.choices.forEach((choice, index) => {
+                    const choiceName = typeof choice === 'string' ? choice : choice.name;
+                    modalContent += `
+                        <label class="option-checkbox-label">
+                            <input type="checkbox" class="option-checkbox" value="${choiceName}" name="options" data-max="${maxSelections}">
+                            <span>${choiceName}</span>
+                        </label>
+                    `;
+                });
+            }
         }
         modalContent += `</div>`;
     }
@@ -289,19 +310,94 @@ function openOptionsModal(productId) {
 
     // Agregar validación en tiempo real para máximo de selecciones
     if (product.options && product.options.type === 'checkbox' && product.options.maxSelections) {
-        const checkboxes = modal.querySelectorAll('input[name="options"]');
-        const maxSelections = product.options.maxSelections;
+        const isTacoOrder = productId === 5 || productId === 6;
         
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const checked = modal.querySelectorAll('input[name="options"]:checked');
-                if (checked.length > maxSelections) {
-                    this.checked = false;
-                    alert(`Solo puedes seleccionar hasta ${maxSelections} opciones`);
-                }
+        if (!isTacoOrder) {
+            const checkboxes = modal.querySelectorAll('input[name="options"]');
+            const maxSelections = product.options.maxSelections;
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checked = modal.querySelectorAll('input[name="options"]:checked');
+                    if (checked.length > maxSelections) {
+                        this.checked = false;
+                        alert(`Solo puedes seleccionar hasta ${maxSelections} opciones`);
+                    }
+                });
             });
-        });
+        } else {
+            // Actualizar contador inicial para órdenes de tacos
+            setTimeout(() => updateTacoTotal(), 100);
+        }
     }
+}
+
+// Ajustar cantidad de tacos
+function adjustTacoQuantity(choiceName, change, maxTotal) {
+    const qtyInput = document.getElementById(`qty-${choiceName}`);
+    if (!qtyInput) return;
+    
+    const currentValue = parseInt(qtyInput.value) || 0;
+    let newValue = currentValue + change;
+    
+    // Calcular total actual de todos los tacos (sin incluir el que estamos cambiando)
+    const allQtyInputs = document.querySelectorAll('.qty-input');
+    let currentTotal = 0;
+    allQtyInputs.forEach(input => {
+        if (input.id !== `qty-${choiceName}`) {
+            currentTotal += parseInt(input.value) || 0;
+        }
+    });
+    
+    // Verificar límites
+    if (newValue < 0) {
+        newValue = 0;
+    } else if (change > 0 && (currentTotal + newValue) > maxTotal) {
+        alert(`Solo puedes seleccionar hasta ${maxTotal} tacos en total. Ya tienes ${currentTotal} seleccionados.`);
+        return;
+    }
+    
+    qtyInput.value = newValue;
+    updateTacoTotal();
+    
+    // Actualizar estado de botones para este input específico
+    const minusBtn = document.querySelector(`.qty-minus[data-choice="${choiceName}"]`);
+    const plusBtn = document.querySelector(`.qty-plus[data-choice="${choiceName}"]`);
+    
+    if (minusBtn) {
+        minusBtn.disabled = newValue <= 0;
+    }
+}
+
+// Actualizar total de tacos seleccionados
+function updateTacoTotal() {
+    const allQtyInputs = document.querySelectorAll('.qty-input');
+    let total = 0;
+    const maxTotal = parseInt(allQtyInputs[0]?.max || 5) || 5;
+    
+    allQtyInputs.forEach(input => {
+        total += parseInt(input.value) || 0;
+    });
+    
+    const totalTacosCount = document.getElementById('totalTacosCount');
+    if (totalTacosCount) {
+        totalTacosCount.textContent = total;
+    }
+    
+    // Actualizar estado de botones
+    allQtyInputs.forEach(input => {
+        const choiceName = input.dataset.choice;
+        const value = parseInt(input.value) || 0;
+        const minusBtn = document.querySelector(`.qty-minus[data-choice="${choiceName}"]`);
+        const plusBtn = document.querySelector(`.qty-plus[data-choice="${choiceName}"]`);
+        
+        if (minusBtn) {
+            minusBtn.disabled = value <= 0;
+        }
+        if (plusBtn) {
+            plusBtn.disabled = total >= maxTotal;
+        }
+    });
 }
 
 // Cerrar modal de opciones
@@ -335,20 +431,54 @@ function confirmAddToCart(productId) {
                 return;
             }
         } else if (product.options.type === 'checkbox') {
-            const checkboxes = document.querySelectorAll('#optionsModal input[name="options"]:checked');
-            selectedOptions = Array.from(checkboxes).map(cb => cb.value);
+            const isTacoOrder = productId === 5 || productId === 6;
             
-            // Validar máximo de selecciones
-            const maxSelections = product.options.maxSelections || product.options.choices.length;
-            if (selectedOptions.length > maxSelections) {
-                alert(`Solo puedes seleccionar hasta ${maxSelections} opciones`);
-                return;
-            }
-            
-            // Si no hay opciones seleccionadas pero son requeridas
-            if (selectedOptions.length === 0 && product.options.required !== false) {
-                alert('Por favor selecciona al menos una opción');
-                return;
+            if (isTacoOrder) {
+                // Para órdenes de tacos, obtener cantidades de cada guiso
+                const qtyInputs = document.querySelectorAll('#optionsModal .qty-input');
+                const selectedGuisos = [];
+                
+                qtyInputs.forEach(input => {
+                    const quantity = parseInt(input.value) || 0;
+                    if (quantity > 0) {
+                        const choiceName = input.dataset.choice;
+                        // Agregar el guiso la cantidad de veces seleccionada
+                        for (let i = 0; i < quantity; i++) {
+                            selectedGuisos.push(choiceName);
+                        }
+                    }
+                });
+                
+                // Validar que se haya seleccionado al menos un taco
+                if (selectedGuisos.length === 0) {
+                    alert('Por favor selecciona al menos un taco');
+                    return;
+                }
+                
+                // Validar máximo de selecciones
+                const maxSelections = product.options.maxSelections || 5;
+                if (selectedGuisos.length > maxSelections) {
+                    alert(`Solo puedes seleccionar hasta ${maxSelections} tacos en total`);
+                    return;
+                }
+                
+                selectedOptions = selectedGuisos;
+            } else {
+                const checkboxes = document.querySelectorAll('#optionsModal input[name="options"]:checked');
+                selectedOptions = Array.from(checkboxes).map(cb => cb.value);
+                
+                // Validar máximo de selecciones
+                const maxSelections = product.options.maxSelections || product.options.choices.length;
+                if (selectedOptions.length > maxSelections) {
+                    alert(`Solo puedes seleccionar hasta ${maxSelections} opciones`);
+                    return;
+                }
+                
+                // Si no hay opciones seleccionadas pero son requeridas
+                if (selectedOptions.length === 0 && product.options.required !== false) {
+                    alert('Por favor selecciona al menos una opción');
+                    return;
+                }
             }
         }
     }
@@ -598,4 +728,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-

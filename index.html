@@ -20,6 +20,7 @@
             <nav class="nav-menu">
                 <a href="#menuSection" class="nav-link">Menú</a>
                 <a href="#references" class="nav-link">Referencias</a>
+                <a href="#contact" class="nav-link">Contacto</a>
             </nav>
             <div class="top-bar-actions">
                 <button class="cart-icon-btn" id="cartButtonTop">
@@ -48,6 +49,23 @@
     <main class="main-container">
         <!-- Sección de Productos -->
         <section class="products-section" id="menuSection">
+            <!-- Barra de búsqueda y filtros -->
+            <div class="filters-container">
+                <div class="search-bar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Buscar productos..." class="search-input">
+                    <button class="clear-search" id="clearSearch" style="display: none;">×</button>
+                </div>
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="all">Todos</button>
+                    <button class="category-btn" data-category="burritos">Burritos</button>
+                    <button class="category-btn" data-category="hotdogs">Hot Dogs</button>
+                    <button class="category-btn" data-category="ordenes">Órdenes</button>
+                </div>
+            </div>
             <div class="products-grid" id="productsGrid">
                 <!-- Los productos se cargarán dinámicamente -->
             </div>
@@ -58,13 +76,43 @@
             <h2 class="references-title">Referencias</h2>
             <div class="references-grid">
                 <div class="reference-item">
-                    <img src="referencia1.jpg" alt="Referencia 1" class="reference-image">
+                    <img src="referencia1.jpg" alt="Referencia 1" class="reference-image" onclick="openImageModal('referencia1.jpg', 'Referencia 1')" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Crect fill=\'%23F5F1E8\' width=\'300\' height=\'300\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%236B6B6B\' font-family=\'Arial\' font-size=\'16\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';" style="cursor: pointer;">
                 </div>
                 <div class="reference-item">
-                    <img src="referencia2.jpg" alt="Referencia 2" class="reference-image">
+                    <img src="referencia2.jpg" alt="Referencia 2" class="reference-image" onclick="openImageModal('referencia2.jpg', 'Referencia 2')" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Crect fill=\'%23F5F1E8\' width=\'300\' height=\'300\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%236B6B6B\' font-family=\'Arial\' font-size=\'16\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';" style="cursor: pointer;">
                 </div>
                 <div class="reference-item">
-                    <img src="referencia3.jpg" alt="Referencia 3" class="reference-image">
+                    <img src="referencia3.jpg" alt="Referencia 3" class="reference-image" onclick="openImageModal('referencia3.jpg', 'Referencia 3')" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Crect fill=\'%23F5F1E8\' width=\'300\' height=\'300\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%236B6B6B\' font-family=\'Arial\' font-size=\'16\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';" style="cursor: pointer;">
+                </div>
+            </div>
+        </section>
+
+        <!-- Información de Contacto -->
+        <section class="contact-section" id="contact">
+            <div class="contact-content">
+                <h2 class="contact-title">Información de Contacto</h2>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <h3>Teléfono</h3>
+                        <p><a href="tel:+528128833450">+52 81 2883 3450</a></p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <h3>Ubicación</h3>
+                        <p>Las malvinas, Escobedo, Nuevo León</p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🕐</div>
+                        <h3>Horarios</h3>
+                        <p>Viernes - Domingo</p>
+                        <p>3:00 PM - 12:00 PM</p>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">💬</div>
+                        <h3>WhatsApp</h3>
+                        <p><a href="https://wa.me/5218128833450" target="_blank">Envíanos un mensaje</a></p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -76,7 +124,7 @@
                 <p>En cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares, EL SAZON informa que los datos personales que nos proporcione serán utilizados únicamente para procesar su pedido y mejorar nuestros servicios.</p>
                 <p>Sus datos personales no serán compartidos con terceros sin su consentimiento, salvo cuando sea necesario para cumplir con obligaciones legales.</p>
                 <p>Usted tiene derecho de acceder, rectificar, cancelar u oponerse al tratamiento de sus datos personales (derechos ARCO). Para ejercer estos derechos, puede contactarnos a través de nuestros canales de comunicación.</p>
-                <p class="privacy-company">© 2024 EL SAZON. Todos los derechos reservados.</p>
+                <p class="privacy-company">© 2026 EL SAZON. Todos los derechos reservados.</p>
             </div>
         </footer>
 
@@ -84,7 +132,10 @@
         <aside class="cart-sidebar" id="cartSidebar">
             <div class="cart-header">
                 <h2>Tu Carrito</h2>
-                <button class="close-cart" id="closeCart">&times;</button>
+                <div class="cart-header-actions">
+                    <button class="clear-cart-btn" id="clearCartBtn" title="Vaciar carrito" style="display: none;">🗑️</button>
+                    <button class="close-cart" id="closeCart">&times;</button>
+                </div>
             </div>
             <div class="cart-items" id="cartItems">
                 <p class="empty-cart">Tu carrito está vacío</p>
@@ -118,4 +169,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

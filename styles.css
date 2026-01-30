@@ -1316,6 +1316,56 @@ body {
     font-weight: 700;
 }
 
+/* Tortillas de harina: selector de cantidad y total */
+.tortilla-quantity-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.quantity-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.quantity-input-group .qty-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 1.25rem;
+}
+
+.tortilla-qty-input {
+    width: 70px;
+    text-align: center;
+    border: 2px solid var(--crema-dark);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--negro);
+    background: white;
+    font-family: 'Poppins', sans-serif;
+}
+
+.tortilla-qty-input:focus {
+    outline: none;
+    border-color: var(--chocolate);
+}
+
+.tortilla-total-display {
+    font-size: 1.1rem;
+    color: var(--negro);
+}
+
+.tortilla-total-display strong {
+    color: var(--chocolate);
+    font-size: 1.25rem;
+}
+
 .options-modal-footer {
     padding: 1.5rem;
     border-top: 2px solid var(--crema-dark);

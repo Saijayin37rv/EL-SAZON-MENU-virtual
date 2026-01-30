@@ -81,8 +81,61 @@ const products = [
         price: 50,
         includes: "INCLUYE: CEBOLLA ASADA O LECHUGA, LIMÓN Y SALSA.",
         image: "orden_de_maiz.jpg"
+    },
+    {
+        id: 7,
+        name: "Pizza Dog",
+        category: "hotdogs",
+        options: {
+            type: "checkbox",
+            label: "CONTIENE (desmarca lo que no quieras):",
+            choices: ["SALCHICHA PARA ASAR", "MAYONESA", "KETCHUP", "QUESO", "PEPERONI"],
+            defaultChecked: true
+        },
+        price: 45,
+        includes: "Incluye todos los ingredientes por defecto. Desmarca en el menú lo que no quieras.",
+        image: "pizza_dog.jpg"
+    },
+    {
+        id: 8,
+        name: "Hamburguesa Clásica",
+        category: "ordenes",
+        options: {
+            type: "checkbox",
+            label: "CONTIENE (desmarca lo que no quieras):",
+            choices: ["AGUACATE", "TOMATE", "CEBOLLA", "LECHUGA", "QUESO", "JAMÓN", "KETCHUP", "CARNE DE RES 🥩"],
+            defaultChecked: true
+        },
+        price: 45,
+        includes: "Incluye todos los ingredientes por defecto. Desmarca en el menú lo que no quieras.",
+        image: "hamburguesa_clasica.jpg"
+    },
+    {
+        id: 9,
+        name: "Agua de sabor 500 ml",
+        category: "bebidas",
+        options: {
+            type: "select",
+            label: "Sabor:",
+            choices: ["Jamaica", "Limón", "Horchata", "Tamarindo"]
+        },
+        price: 15,
+        includes: "Refrescante agua de sabor natural 500 ml.",
+        image: "agua_sabor.jpg"
     }
 ];
+
+// Imágenes genéricas SVG para productos sin foto (Pizza Dog, Hamburguesa, Agua)
+function getGenericProductImage(productId) {
+    const svgs = {
+        7: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><ellipse cx="100" cy="115" rx="55" ry="25" fill="#8B4513"/><ellipse cx="100" cy="108" rx="50" ry="22" fill="#D2691E"/><ellipse cx="100" cy="95" rx="45" ry="18" fill="#DEB887"/><circle cx="75" cy="88" r="8" fill="#C85A2F"/><circle cx="100" cy="85" r="8" fill="#C85A2F"/><circle cx="125" cy="90" r="8" fill="#C85A2F"/><circle cx="90" cy="75" r="6" fill="#FFD700"/><circle cx="110" cy="78" r="6" fill="#FFD700"/><text x="100" y="165" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="14" font-weight="bold">Pizza Dog</text></svg>',
+        8: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><ellipse cx="100" cy="145" rx="60" ry="12" fill="#D2691E"/><rect x="55" y="95" width="90" height="45" rx="5" fill="#8B4513"/><rect x="60" y="100" width="80" height="8" fill="#228B22"/><rect x="60" y="112" width="80" height="25" fill="#654321"/><rect x="60" y="120" width="80" height="8" fill="#FFD700"/><ellipse cx="100" cy="92" rx="55" ry="12" fill="#D2691E"/><text x="100" y="178" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="12" font-weight="bold">Hamburguesa</text></svg>',
+        9: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><path d="M75 50 L75 155 Q75 165 100 165 Q125 165 125 155 L125 50 Z" fill="none" stroke="#5C4033" stroke-width="8"/><path d="M78 55 L78 152 Q78 158 100 158 Q122 158 122 152 L122 55 Z" fill="url(#aguaGrad)"/><defs><linearGradient id="aguaGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#87CEEB"/><stop offset="100%" style="stop-color:#E0F4FF"/></linearGradient></defs><ellipse cx="100" cy="52" rx="22" ry="6" fill="#E8E8E8"/><text x="100" y="182" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="13" font-weight="bold">Agua 500 ml</text></svg>'
+    };
+    const svg = svgs[productId];
+    if (!svg) return null;
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
 
 // Estado de filtros y búsqueda
 let currentCategory = 'all';
@@ -155,6 +208,8 @@ function renderProducts() {
 
         const priceText = product.price > 0 ? `$${product.price.toFixed(0)}` : '';
         const priceUnit = product.price > 0 && (product.name.includes('Hot Dog') || product.name.includes('Burrito')) ? ' C/U' : '';
+        const displayImage = getGenericProductImage(product.id) || product.image;
+        const fallbackSvg = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect fill="#F5F1E8" width="300" height="300"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#6B6B6B" font-family="Arial" font-size="20">Imagen no disponible</text></svg>');
         
         // Construir texto de opciones para mostrar
         let optionsText = '';
@@ -168,7 +223,7 @@ function renderProducts() {
         
         productCard.innerHTML = `
             <div class="product-image-container">
-                <img src="${product.image}" alt="${product.name}" class="product-image" onclick="openImageModal('${product.image}', '${product.name}')" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Crect fill=\'%23F5F1E8\' width=\'300\' height=\'300\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%236B6B6B\' font-family=\'Arial\' font-size=\'20\'%3EImagen no disponible%3C/text%3E%3C/svg%3E';" style="cursor: pointer;">
+                <img src="${displayImage}" alt="${product.name.replace(/"/g, '&quot;')}" class="product-image" data-product-id="${product.id}" data-product-name="${product.name.replace(/"/g, '&quot;')}" onerror="this.onerror=null; this.src='${fallbackSvg}';" style="cursor: pointer;">
                 ${product.price > 0 ? `<div class="price-tag">${priceText}${priceUnit}</div>` : ''}
             </div>
             <div class="product-info">
@@ -288,6 +343,20 @@ function setupEventListeners() {
             renderProducts();
         });
     });
+
+    // Clic en imagen de producto para ampliar (delegado para soportar imágenes genéricas)
+    const productsGrid = document.getElementById('productsGrid');
+    if (productsGrid) {
+        productsGrid.addEventListener('click', (e) => {
+            const img = e.target.closest('.product-image');
+            if (!img || !img.dataset.productId) return;
+            const id = parseInt(img.dataset.productId, 10);
+            const name = (img.dataset.productName || '').replace(/&quot;/g, '"');
+            const product = products.find(p => p.id === id);
+            const src = getGenericProductImage(id) || (product && product.image) || img.src;
+            openImageModal(src, name);
+        });
+    }
 }
 
 // Abrir modal de opciones
@@ -349,12 +418,18 @@ function openOptionsModal(productId) {
                 });
                 modalContent += `<div class="total-tacos-info" id="totalTacosInfo">Total seleccionado: <span id="totalTacosCount">0</span> / ${maxSelections}</div>`;
             } else {
-                modalContent += `<p class="max-selections-info">Puedes seleccionar hasta ${maxSelections} opciones</p>`;
+                const defaultChecked = product.options.defaultChecked === true;
+                if (defaultChecked) {
+                    modalContent += `<p class="max-selections-info">Viene con todo. Desmarca lo que no quieras.</p>`;
+                } else if (product.options.maxSelections) {
+                    modalContent += `<p class="max-selections-info">Puedes seleccionar hasta ${maxSelections} opciones</p>`;
+                }
                 product.options.choices.forEach((choice, index) => {
                     const choiceName = typeof choice === 'string' ? choice : choice.name;
+                    const checkedAttr = defaultChecked ? ' checked' : '';
                     modalContent += `
                         <label class="option-checkbox-label">
-                            <input type="checkbox" class="option-checkbox" value="${choiceName}" name="options" data-max="${maxSelections}">
+                            <input type="checkbox" class="option-checkbox" value="${choiceName}" name="options" data-max="${maxSelections}"${checkedAttr}>
                             <span>${choiceName}</span>
                         </label>
                     `;
@@ -558,8 +633,8 @@ function confirmAddToCart(productId) {
                     return;
                 }
                 
-                // Si no hay opciones seleccionadas pero son requeridas
-                if (selectedOptions.length === 0 && product.options.required !== false) {
+                // Si no hay opciones seleccionadas pero son requeridas (no aplica si es "desmarca lo que no quieras")
+                if (selectedOptions.length === 0 && product.options.required !== false && !product.options.defaultChecked) {
                     alert('Por favor selecciona al menos una opción');
                     return;
                 }
@@ -696,19 +771,21 @@ function updateCartUI() {
             let optionsInfo = '';
             if (item.selectedOptions) {
                 if (Array.isArray(item.selectedOptions)) {
-                    // Agrupar guisos por tipo y mostrar cantidad
-                    const guisosCount = {};
-                    item.selectedOptions.forEach(guiso => {
-                        guisosCount[guiso] = (guisosCount[guiso] || 0) + 1;
-                    });
-                    
-                    const guisosFormatted = Object.entries(guisosCount)
-                        .map(([guiso, count]) => count > 1 ? `${count}x ${guiso}` : guiso)
-                        .join(', ');
-                    
-                    optionsInfo = `<div class="cart-item-options">Guisos: ${guisosFormatted}</div>`;
+                    const isPizzaOrBurger = item.originalId === 7 || item.originalId === 8;
+                    if (isPizzaOrBurger) {
+                        optionsInfo = `<div class="cart-item-options">Con: ${item.selectedOptions.join(', ')}</div>`;
+                    } else {
+                        const guisosCount = {};
+                        item.selectedOptions.forEach(guiso => {
+                            guisosCount[guiso] = (guisosCount[guiso] || 0) + 1;
+                        });
+                        const guisosFormatted = Object.entries(guisosCount)
+                            .map(([guiso, count]) => count > 1 ? `${count}x ${guiso}` : guiso)
+                            .join(', ');
+                        optionsInfo = `<div class="cart-item-options">Guisos: ${guisosFormatted}</div>`;
+                    }
                 } else {
-                    optionsInfo = `<div class="cart-item-options">Guiso: ${item.selectedOptions}</div>`;
+                    optionsInfo = `<div class="cart-item-options">${item.name.includes('Agua') ? 'Sabor: ' : 'Guiso: '}${item.selectedOptions}</div>`;
                 }
             }
             
@@ -758,22 +835,26 @@ function sendToWhatsApp() {
         
         if (item.selectedOptions) {
             if (Array.isArray(item.selectedOptions) && item.selectedOptions.length > 0) {
-                // Agrupar guisos por tipo para mejor legibilidad
-                const guisosCount = {};
-                item.selectedOptions.forEach(guiso => {
-                    guisosCount[guiso] = (guisosCount[guiso] || 0) + 1;
-                });
-                
-                message += `   🎯 Guisos seleccionados:\n`;
-                Object.entries(guisosCount).forEach(([guiso, count]) => {
-                    if (count > 1) {
-                        message += `      • ${count}x ${guiso}\n`;
-                    } else {
-                        message += `      • ${guiso}\n`;
-                    }
-                });
+                const isPizzaOrBurger = item.originalId === 7 || item.originalId === 8;
+                const label = isPizzaOrBurger ? 'Con:' : 'Guisos seleccionados:';
+                if (isPizzaOrBurger) {
+                    message += `   🎯 ${label} ${item.selectedOptions.join(', ')}\n`;
+                } else {
+                    const guisosCount = {};
+                    item.selectedOptions.forEach(guiso => {
+                        guisosCount[guiso] = (guisosCount[guiso] || 0) + 1;
+                    });
+                    message += `   🎯 ${label}\n`;
+                    Object.entries(guisosCount).forEach(([guiso, count]) => {
+                        if (count > 1) {
+                            message += `      • ${count}x ${guiso}\n`;
+                        } else {
+                            message += `      • ${guiso}\n`;
+                        }
+                    });
+                }
             } else if (!Array.isArray(item.selectedOptions)) {
-                message += `   🎯 Guiso: ${item.selectedOptions}\n`;
+                message += `   🎯 ${item.name.includes('Agua') ? 'Sabor' : 'Guiso'}: ${item.selectedOptions}\n`;
             }
         }
         
@@ -888,6 +969,9 @@ style.textContent = `
     .product-card:nth-child(4) { animation-delay: 0.4s; }
     .product-card:nth-child(5) { animation-delay: 0.5s; }
     .product-card:nth-child(6) { animation-delay: 0.6s; }
+    .product-card:nth-child(7) { animation-delay: 0.7s; }
+    .product-card:nth-child(8) { animation-delay: 0.8s; }
+    .product-card:nth-child(9) { animation-delay: 0.9s; }
 `;
 document.head.appendChild(style);
 

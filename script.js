@@ -122,6 +122,21 @@ const products = [
         price: 15,
         includes: "Refrescante agua de sabor natural 500 ml.",
         image: "agua_sabor.jpg"
+    },
+    {
+        id: 10,
+        name: "Pedidos de tortillas de harina",
+        category: "ordenes",
+        options: {
+            type: "quantity",
+            label: "Cantidad:",
+            unitPrice: 1.50,
+            min: 1,
+            max: 999
+        },
+        price: 1.50,
+        includes: "Solo por pedido. $1.50 por tortilla.",
+        image: "tortillas_harina.jpg"
     }
 ];
 
@@ -130,7 +145,8 @@ function getGenericProductImage(productId) {
     const svgs = {
         7: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><ellipse cx="100" cy="115" rx="55" ry="25" fill="#8B4513"/><ellipse cx="100" cy="108" rx="50" ry="22" fill="#D2691E"/><ellipse cx="100" cy="95" rx="45" ry="18" fill="#DEB887"/><circle cx="75" cy="88" r="8" fill="#C85A2F"/><circle cx="100" cy="85" r="8" fill="#C85A2F"/><circle cx="125" cy="90" r="8" fill="#C85A2F"/><circle cx="90" cy="75" r="6" fill="#FFD700"/><circle cx="110" cy="78" r="6" fill="#FFD700"/><text x="100" y="165" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="14" font-weight="bold">Pizza Dog</text></svg>',
         8: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><ellipse cx="100" cy="145" rx="60" ry="12" fill="#D2691E"/><rect x="55" y="95" width="90" height="45" rx="5" fill="#8B4513"/><rect x="60" y="100" width="80" height="8" fill="#228B22"/><rect x="60" y="112" width="80" height="25" fill="#654321"/><rect x="60" y="120" width="80" height="8" fill="#FFD700"/><ellipse cx="100" cy="92" rx="55" ry="12" fill="#D2691E"/><text x="100" y="178" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="12" font-weight="bold">Hamburguesa</text></svg>',
-        9: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><path d="M75 50 L75 155 Q75 165 100 165 Q125 165 125 155 L125 50 Z" fill="none" stroke="#5C4033" stroke-width="8"/><path d="M78 55 L78 152 Q78 158 100 158 Q122 158 122 152 L122 55 Z" fill="url(#aguaGrad)"/><defs><linearGradient id="aguaGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#87CEEB"/><stop offset="100%" style="stop-color:#E0F4FF"/></linearGradient></defs><ellipse cx="100" cy="52" rx="22" ry="6" fill="#E8E8E8"/><text x="100" y="182" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="13" font-weight="bold">Agua 500 ml</text></svg>'
+        9: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><path d="M75 50 L75 155 Q75 165 100 165 Q125 165 125 155 L125 50 Z" fill="none" stroke="#5C4033" stroke-width="8"/><path d="M78 55 L78 152 Q78 158 100 158 Q122 158 122 152 L122 55 Z" fill="url(#aguaGrad)"/><defs><linearGradient id="aguaGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#87CEEB"/><stop offset="100%" style="stop-color:#E0F4FF"/></linearGradient></defs><ellipse cx="100" cy="52" rx="22" ry="6" fill="#E8E8E8"/><text x="100" y="182" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="13" font-weight="bold">Agua 500 ml</text></svg>',
+        10: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="#F5F1E8" width="200" height="200"/><ellipse cx="100" cy="100" rx="55" ry="45" fill="#F5DEB3" stroke="#D2691E" stroke-width="2"/><ellipse cx="100" cy="98" rx="50" ry="40" fill="#FFEFD5"/><text x="100" y="175" text-anchor="middle" fill="#5C4033" font-family="Arial" font-size="12" font-weight="bold">Tortillas de harina</text></svg>'
     };
     const svg = svgs[productId];
     if (!svg) return null;
@@ -207,7 +223,7 @@ function renderProducts() {
         productCard.className = 'product-card';
 
         const priceText = product.price > 0 ? `$${product.price.toFixed(0)}` : '';
-        const priceUnit = product.price > 0 && (product.name.includes('Hot Dog') || product.name.includes('Burrito')) ? ' C/U' : '';
+        const priceUnit = product.price > 0 && (product.name.includes('Hot Dog') || product.name.includes('Burrito') || product.id === 10) ? ' C/U' : '';
         const displayImage = getGenericProductImage(product.id) || product.image;
         const fallbackSvg = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect fill="#F5F1E8" width="300" height="300"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#6B6B6B" font-family="Arial" font-size="20">Imagen no disponible</text></svg>');
         
@@ -389,7 +405,21 @@ function openOptionsModal(productId) {
         modalContent += `<div class="options-group">
             <label class="options-group-label">${product.options.label}</label>`;
         
-        if (product.options.type === 'select') {
+        if (product.options.type === 'quantity') {
+            const unitPrice = product.options.unitPrice ?? product.price;
+            const min = product.options.min ?? 1;
+            const max = product.options.max ?? 999;
+            modalContent += `
+                <div class="tortilla-quantity-row">
+                    <div class="quantity-input-group">
+                        <button type="button" class="qty-btn qty-minus" onclick="adjustTortillaQuantity(-1)">-</button>
+                        <input type="number" id="tortillaQuantity" class="tortilla-qty-input" value="1" min="${min}" max="${max}" data-unit-price="${unitPrice}">
+                        <button type="button" class="qty-btn qty-plus" onclick="adjustTortillaQuantity(1)">+</button>
+                    </div>
+                    <div class="tortilla-total-display">Total: <strong id="tortillaTotalDisplay">$${unitPrice.toFixed(2)}</strong></div>
+                </div>
+            `;
+        } else if (product.options.type === 'select') {
             modalContent += `<select id="optionSelect" class="option-select">`;
             modalContent += `<option value="">Selecciona una opción</option>`;
             product.options.choices.forEach(choice => {
@@ -466,6 +496,15 @@ function openOptionsModal(productId) {
     modal.innerHTML = modalContent;
     document.body.appendChild(modal);
     modal.style.display = 'flex';
+
+    // Para producto tipo cantidad (tortillas), actualizar total al cambiar y listener en input
+    if (product.options && product.options.type === 'quantity') {
+        const input = document.getElementById('tortillaQuantity');
+        if (input) {
+            input.addEventListener('input', updateTortillaTotalDisplay);
+            input.addEventListener('change', updateTortillaTotalDisplay);
+        }
+    }
 
     // Agregar validación en tiempo real para máximo de selecciones
     if (product.options && product.options.type === 'checkbox' && product.options.maxSelections) {
@@ -559,6 +598,33 @@ function updateTacoTotal() {
     });
 }
 
+// Ajustar cantidad de tortillas en el modal
+function adjustTortillaQuantity(change) {
+    const input = document.getElementById('tortillaQuantity');
+    if (!input) return;
+    const min = parseInt(input.min) || 1;
+    const max = parseInt(input.max) || 999;
+    let value = parseInt(input.value) || min;
+    value = Math.max(min, Math.min(max, value + change));
+    input.value = value;
+    updateTortillaTotalDisplay();
+}
+
+// Actualizar el total mostrado para tortillas
+function updateTortillaTotalDisplay() {
+    const input = document.getElementById('tortillaQuantity');
+    const display = document.getElementById('tortillaTotalDisplay');
+    if (!input || !display) return;
+    const unitPrice = parseFloat(input.dataset.unitPrice) || 1.5;
+    let qty = parseInt(input.value) || 0;
+    const min = parseInt(input.min) || 1;
+    const max = parseInt(input.max) || 999;
+    qty = Math.max(min, Math.min(max, qty));
+    input.value = qty;
+    const total = (qty * unitPrice).toFixed(2);
+    display.textContent = `$${total}`;
+}
+
 // Cerrar modal de opciones
 function closeOptionsModal() {
     const modal = document.getElementById('optionsModal');
@@ -578,6 +644,23 @@ function confirmAddToCart(productId) {
     let selectedOptions = null;
     let selectedExtras = null;
     let extraPrice = 0;
+    let customQuantity = null;
+
+    // Producto tipo cantidad (ej. tortillas de harina)
+    if (product.options && product.options.type === 'quantity') {
+        const input = document.getElementById('tortillaQuantity');
+        if (!input) return;
+        const qty = parseInt(input.value) || 0;
+        const min = product.options.min ?? 1;
+        if (qty < min) {
+            alert(`Por favor ingresa al menos ${min} cantidad`);
+            return;
+        }
+        customQuantity = qty;
+        addToCart(productId, null, null, 0, customQuantity);
+        closeOptionsModal();
+        return;
+    }
 
     // Obtener opciones seleccionadas
     if (product.options) {
@@ -654,11 +737,12 @@ function confirmAddToCart(productId) {
 }
 
 // Añadir al carrito
-function addToCart(productId, selectedOptions = null, selectedExtras = null, extraPrice = 0) {
+function addToCart(productId, selectedOptions = null, selectedExtras = null, extraPrice = 0, customQuantity = null) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
     const finalPrice = product.price + extraPrice;
+    const quantity = customQuantity != null && customQuantity > 0 ? customQuantity : 1;
     const cartItem = {
         ...product,
         id: `${productId}-${Date.now()}`, // ID único para cada item con opciones diferentes
@@ -666,7 +750,7 @@ function addToCart(productId, selectedOptions = null, selectedExtras = null, ext
         selectedOptions: selectedOptions,
         selectedExtras: selectedExtras,
         price: finalPrice,
-        quantity: 1
+        quantity: quantity
     };
 
     cart.push(cartItem);
